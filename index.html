@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Sui Gas Housing Scheme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@latest/dist/leaflet.css" />
+  <link rel="stylesheet" href="Control.FullScreen.css" />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+  <link rel="stylesheet" href="index.css">
+
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.79.0/L.Control.Locate.min.js"
+    charset="utf-8"></script>
+
+  <script src="https://unpkg.com/leaflet@latest/dist/leaflet.js"></script>
+  <script src="Control.FullScreen.js"></script>
+</head>
+
+<body>
+  <div id="map">
+    <button id="geolocate" onclick="geolocateControl()"></button>
+  </div>
+
+  <div id="transparency">
+    <label for="opacity"></label>
+    <input type="range" min="0" max="1" step="0.1" value="1" id="opacity">
+  </div>
+
+  <script>
+
+    var map = L.map("map", {
+      tap: false,
+      fullscreenControl: true,
+      locateControl: true,
+      fullscreenControlOptions: {
+
+        title: "Show me the fullscreen !",
+        titleCancel: "Exit fullscreen mode",
+      },
+    }).setView([31.454420, 74.399383], 15);
+
+    var tiles = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+      maxZoom: 24,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }).addTo(map);
+
+    var layer1 = L.tileLayer('./tiles/{z}/{x}/{y}.png', {
+      attribution: 'Sui Gas Housing Scheme',
+      maxZoom: 24,
+      opacity: 1
+    }).addTo(map);
+
+    function geolocateControl() {
+      map.locate({ setView: true, enableHighAccuracy: true, watch: true });
+    }
+
+    map.on("enterFullscreen", function () {
+      if (window.console) window.console.log("enterFullscreen");
+    });
+    map.on("exitFullscreen", function () {
+      if (window.console) window.console.log("exitFullscreen");
+    });
+
+    var baseLayers = {
+      'Google Earth': tiles
+    };
+
+    var overlays = {
+      'Sui Gas Housing Scheme': layer1
+    };
+
+    L.control.layers(baseLayers, overlays).addTo(map);
+
+    document.getElementById('opacity').addEventListener('input', function (e) {
+      var opacityValue = e.target.value;
+      layer1.setOpacity(opacityValue);
+    });
+
+
+  </script>
+</body>
+
+</html>
